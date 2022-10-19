@@ -34,6 +34,15 @@ namespace FirstSteps
         private void CreateVertexArrayObject()
         {
             //TODO: Create a vertex array object and initialize it with vertices
+            float[] vertices = new float[] {-1,-1,0,1,-1,0,-1,1,0,1,1,0};
+            BufferObjectId = GL.GenBuffer();
+            VertexArrayObjectId = GL.GenVertexArray();
+            GL.BindVertexArray(VertexArrayObjectId);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, BufferObjectId);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float),vertices, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3* sizeof(float), 0);
+            GL.EnableVertexAttribArray(0);
+            
         }
 
         private void CompileShaders(string vertexShaderFilename, string fragmentShaderFilename)
@@ -99,7 +108,8 @@ namespace FirstSteps
             GL.UseProgram(ProgramId);
 
             //TODO: Draw a triangle strip from the vertex array object we created before
-
+            GL.BindVertexArray(VertexArrayObjectId);
+            GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
             Context.SwapBuffers();
 
             OpenTK.Graphics.OpenGL.ErrorCode error = GL.GetError();
