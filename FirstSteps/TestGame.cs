@@ -22,7 +22,7 @@ namespace FirstSteps
             CreateVertexArrayObject();
 
             //Create shaders
-            CompileShaders("..\\..\\..\\..\\GameEngine\\Shaders\\Position.vertex-shader", "..\\..\\..\\..\\GameEngine\\Shaders\\Position.fragment-shader");
+            CompileShaders("..\\..\\..\\..\\GameEngine\\Shaders\\PositionColor.vertex-shader", "..\\..\\..\\..\\GameEngine\\Shaders\\PositionColor.fragment-shader");
 
             //General settings
             GL.ClearColor(Color.White);
@@ -34,15 +34,16 @@ namespace FirstSteps
         private void CreateVertexArrayObject()
         {
             //TODO: Create a vertex array object and initialize it with vertices
-            float[] vertices = new float[] {-1,-1,0,1,-1,0,-1,1,0,1,1,0};
+            float[] vertices = new float[] {-1,-1,0,0.5f, 0.55f, 0.85f, 1,-1,0, 0.25f, 0.345f, 0.95f, -1,1,0, 0.35f, 0.85f, 0.75f, 1,1,0, 0.15f, 0.45f, 0.45f };
             BufferObjectId = GL.GenBuffer();
             VertexArrayObjectId = GL.GenVertexArray();
             GL.BindVertexArray(VertexArrayObjectId);
             GL.BindBuffer(BufferTarget.ArrayBuffer, BufferObjectId);
             GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float),vertices, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3* sizeof(float), 0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, (3+3)* sizeof(float), 0);
             GL.EnableVertexAttribArray(0);
-            
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, (3+3) * sizeof(float), 3*sizeof(float));
+            GL.EnableVertexAttribArray(1);
         }
 
         private void CompileShaders(string vertexShaderFilename, string fragmentShaderFilename)
