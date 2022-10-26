@@ -27,14 +27,28 @@ namespace FirstSteps
             //General settings
             GL.ClearColor(Color.White);
             GL.Enable(EnableCap.DepthTest);
-            
+
             //TODO: Create a transformation matrix and pass it to the shading program as a uniform variable
+            GL.UseProgram(ProgramId);
+            Matrix4 translation = Matrix4.CreateTranslation(new Vector3(0.1f, 0.2f, 0f));
+            Matrix4 scale = Matrix4.CreateScale(0.8f,0.5f, 0.4f);
+            Matrix4 rotation =
+            Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(70));
+            Matrix4 trans = scale * rotation * translation;
+            int location = GL.GetUniformLocation(ProgramId, "Transform");
+            GL.UniformMatrix4(location, true, ref trans);
         }
 
         private void CreateVertexArrayObject()
         {
             //TODO: Create a vertex array object and initialize it with vertices
-            float[] vertices = new float[] {-1,-1,0,0.5f, 0.55f, 0.85f, 1,-1,0, 0.25f, 0.345f, 0.95f, -1,1,0, 0.35f, 0.85f, 0.75f, 1,1,0, 0.15f, 0.45f, 0.45f };
+            float[] vertices = new float[] 
+            {
+                -1,-1,0,0.5f, 0.55f, 0.85f,
+                1,-1,0, 0.25f, 0.345f, 0.95f,
+                -1,1,0, 0.35f, 0.85f, 0.75f,
+                1,1,0, 0.15f, 0.45f, 0.45f
+            };
             BufferObjectId = GL.GenBuffer();
             VertexArrayObjectId = GL.GenVertexArray();
             GL.BindVertexArray(VertexArrayObjectId);
