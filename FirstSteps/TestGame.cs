@@ -4,6 +4,8 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -16,13 +18,14 @@ namespace FirstSteps
         int BufferObjectId;
         int VertexArrayObjectId;
         int ProgramId;
+        int TextureId;
         public TestGame(): base(new GameWindowSettings() , new NativeWindowSettings() { WindowState = WindowState.Normal })
         {
             //Create and initialize Vertex Array Object
             CreateVertexArrayObject();
 
             //Create shaders
-            CompileShaders("..\\..\\..\\..\\GameEngine\\Shaders\\PositionColor.vertex-shader", "..\\..\\..\\..\\GameEngine\\Shaders\\PositionColor.fragment-shader");
+            CompileShaders("..\\..\\..\\..\\GameEngine\\Shaders\\PositionTexture.vertex-shader", "..\\..\\..\\..\\GameEngine\\Shaders\\PositionTexture.fragment-shader");
 
             //General settings
             GL.ClearColor(Color.White);
@@ -37,6 +40,29 @@ namespace FirstSteps
             Matrix4 trans = scale * rotation * translation;
             int location = GL.GetUniformLocation(ProgramId, "Transform");
             GL.UniformMatrix4(location, true, ref trans);
+
+
+
+            SixLabors.ImageSharp.Image<Rgba32> image = SixLabors.ImageSharp.Image.Load<Rgba32>("..\\..\\..\\..\\img\\alien-01.png");
+            image.Mutate(x => x.Flip(FlipMode.Vertical));
+            var pixels = new byte[4 * image.Width * image.Height];
+            image.CopyPixelDataTo(pixels);
+
+            TextureId = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, TextureId);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, image.Width,
+            image.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
+            (int)TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
+            (int)TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
+            (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
+            (int)TextureMagFilter.Linear);
+
+            GL.BindTexture(TextureTarget.Texture2D, TextureId);
+
         }
 
         private void CreateVertexArrayObject()
@@ -121,6 +147,8 @@ namespace FirstSteps
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.UseProgram(ProgramId);
+
+            GL.BindTexture(TextureTarget.Texture2D, TextureId);
 
             //TODO: Draw a triangle strip from the vertex array object we created before
             GL.BindVertexArray(VertexArrayObjectId);

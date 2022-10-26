@@ -1,1 +1,12 @@
-﻿
+﻿#version 330 core
+
+out vec4 OutFragmentColor;
+
+in vec2 TextureCoords;
+
+uniform sampler2D Texture;
+
+void main()
+{
+    OutFragmentColor = texture(Texture, TextureCoords.st);
+}
